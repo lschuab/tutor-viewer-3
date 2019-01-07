@@ -1,13 +1,13 @@
 <template>
-  <HelloWorld />
+  <Schedule></Schedule>
 </template>
 
 <script>
-  import HelloWorld from '../components/HelloWorld'
+  import Schedule from '../components/Schedule.vue'
 
   export default {
     components: {
-      HelloWorld
+      Schedule
     }
   }
 </script>
