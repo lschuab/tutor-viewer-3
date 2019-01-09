@@ -1,6 +1,6 @@
 <template>
-  <v-app>
-    <router-view></router-view>
+  <v-app id="app">
+    <router-view />
   </v-app>
 </template>
 
@@ -20,6 +20,10 @@ export default {
 
 <style>
 body{
-    margin: 0;
+  
 }
+#app {
+  background-color: #C9E4CA;
+}
+html { overflow-y: auto }
 </style>

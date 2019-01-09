@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Student from './views/Student.vue'
+import StudentView from './components/StudentView.vue'
+import AdminView from './components/AdminView.vue'
+import Tutors from './components/Tutors.vue'
+import NewTutor from './components/NewTutor.vue'
 
 Vue.use(Router)
 
@@ -10,8 +13,30 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'student',
-      component: Student
+      name: 'studentView',
+      component: StudentView,
+    },
+    {
+      path: '/admin',
+      name: 'adminView',
+      component: AdminView,
+      children: [
+        {
+          path: '/tutors',
+          name: 'tutors',
+          component: Tutors
+        },
+        {
+          path: '/student_view',
+          name: 'studentViewDash',
+          component: StudentView
+        },
+        {
+          path: '/new_tutor',
+          name: 'newTutor',
+          component: NewTutor
+        }
+      ]
     },
   ]
 })
