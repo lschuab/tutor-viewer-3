@@ -63,10 +63,10 @@
 </template>
 
 <script>
-import { times, timesFormatted, shiftAdded } from '../utilities';
+import { times, timesFormatted } from '../utilities';
 import EventBus from '../event-bus';
 export default {
-  props: ['tutorID', 'tutorName'],
+  props: ['tutorID', 'tutorName', 'shiftAdded'],
   data: () => ({
     apiURL: "http://localhost:8000",
     days: [

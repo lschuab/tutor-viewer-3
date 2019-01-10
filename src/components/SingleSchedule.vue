@@ -42,9 +42,6 @@ export default {
   updated() {},
   methods: {
     showSchedule() {
-      console.log("schedule should have changed");
-      // eslint-disable-next-line
-      console.log("tutor", this.tutor);
       for (let day of this.days) {
         this.shifts[day] = [JSON.parse(JSON.stringify(emptySlots))];
       }
@@ -61,7 +58,6 @@ export default {
 
       this.shifts = JSON.parse(JSON.stringify(this.shifts));
 
-      // eslint-disable-next-line
     }
   },
   watch: {
@@ -76,7 +72,6 @@ export default {
   },
   mounted() {
     EventBus.$on("ADDED_SHIFT", () => {
-      console.log("refreshed");
       this.$http.get(`${this.apiURL}/tutors/${this.tutorID}`).then(data => {
           this.tutor = data.body;
           this.showSchedule();

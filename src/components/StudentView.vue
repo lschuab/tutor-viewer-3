@@ -1,9 +1,6 @@
 <template>
   <v-container id="student-view">
     <v-layout column align-center>
-      <v-flex v-if="studentView">
-        <h3>Which class would you like to find a tutor for?</h3>
-      </v-flex>
       <v-flex>
         <v-layout row mt-1>
           <v-flex>

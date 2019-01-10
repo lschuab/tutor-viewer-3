@@ -8,9 +8,9 @@
   
             <v-spacer></v-spacer>
   
-            <v-btn icon>
+            <!-- <v-btn icon>
               <v-icon>search</v-icon>
-            </v-btn>
+            </v-btn> -->
           </v-toolbar>
           <v-list id="tutors-list">
             <template v-for="(tutor, index) in tutors"> 
@@ -44,6 +44,8 @@
 
 <script>
 import Tutor from './Tutor.vue'
+import EventBus from "../event-bus";
+
 export default {
   components: {
     Tutor
@@ -65,6 +67,14 @@ export default {
     updateTutor(id) {
       this.selectedTutorId = id;
     }
+  },
+  mounted() {
+    EventBus.$on("DELETED_TUTOR", () => {
+      this.$http.get(`${this.apiURL}/tutors`)
+      .then(data => {
+        this.tutors = data.body;
+      })
+    });
   }
 }
 </script>
@@ -77,6 +87,9 @@ export default {
 #tutors-list {
   height: 100%;
   overflow-y: auto;
+}
+#tutors-cont {
+  padding-top: .92rem;
 }
 </style>
 

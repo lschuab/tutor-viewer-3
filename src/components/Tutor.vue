@@ -1,6 +1,6 @@
 <template>
   <v-layout column align-center justify-start>
-    <v-flex mt-3>
+    <v-flex>
       <v-toolbar color="teal darken-1" dark>
         <v-toolbar-title>{{tutor.firstName ? (tutor.firstName + " " + tutor.lastName) : "Choose a tutor"}}</v-toolbar-title>
         <!-- <v-btn 
@@ -32,11 +32,21 @@
           :key="item"
         >
           <v-card id='tab-window' flat>
-            <SingleSchedule v-if="item === 'schedule'" v-bind:tutorID="tutorID"
-          />
-            <AddShift v-else-if="item === 'add shift'" v-bind:tutorID="tutorID"
-            v-bind:tutorName="tutor.firstName + ' ' + tutor.lastName"
-            v-bind:shiftAdded="shiftAdded"
+            <SingleSchedule 
+              default v-if="item === 'schedule'" 
+              v-bind:tutorID="tutorID"
+            />
+            <AddShift 
+              v-else-if="item === 'edit shifts'" 
+              v-bind:tutorID="tutorID"
+              v-bind:tutorName="tutor.firstName + ' ' + tutor.lastName"
+            />
+            <EditTutor 
+              v-else-if="item === 'edit tutor'" 
+              v-bind:firstName="tutor.firstName"
+              v-bind:lastName="tutor.lastName"
+              v-bind:tutorID="tutor.id"
+              v-bind:previouslySelectedCourses="tutor.courses.map(course => course.id)"
             />
           </v-card>
         </v-tab-item>
@@ -48,20 +58,27 @@
 <script>
 import SingleSchedule from './SingleSchedule.vue'
 import AddShift from './AddShift.vue'
+import EditTutor from './EditTutor.vue'
 export default {
   props: ['tutorID'],
   data: () => ({
-    shiftAdded: false,
     apiURL: "http://localhost:8000",
-    tutor: {},
+    tutor: {
+      id: null,
+      firstName: '',
+      lastName: '',
+      courses: []
+    },
     tab: null,
     items: [
-      'schedule', 'add shift', 'courses', 'edit'
-    ]
+      'schedule', 'edit shifts', 'edit tutor'
+    ],
+    shiftAdded:false
   }),
   components: {
     SingleSchedule,
-    AddShift
+    AddShift,
+    EditTutor
   },
   created () {
     if (this.tutorID){
@@ -94,6 +111,6 @@ export default {
 <style>
 #tab-window {
   width: 70vw !important;
-  height:81vh !important;
+  height:83.2vh !important;
 }
 </style>
