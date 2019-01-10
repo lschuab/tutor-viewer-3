@@ -52,11 +52,11 @@ export default {
   data () {
     return {
       items: [
-        { 
-          title: 'Home', 
-          icon: 'dashboard', 
-          path:'/admin' 
-        },
+        // { 
+        //   title: 'Home', 
+        //   icon: 'dashboard', 
+        //   path:'/admin' 
+        // },
         { 
           title: 'Tutors', 
           icon: 'face', 
@@ -74,10 +74,10 @@ export default {
           icon: 'view_week', 
           path:'/student_view'
         },
-        { 
-          title: 'About', 
-          icon: 'question_answer', 
-          path: ''}
+        // { 
+        //   title: 'About', 
+        //   icon: 'question_answer', 
+        //   path: ''}
       ],
     }
   }

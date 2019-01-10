@@ -40,6 +40,7 @@
               v-else-if="item === 'edit shifts'" 
               v-bind:tutorID="tutorID"
               v-bind:tutorName="tutor.firstName + ' ' + tutor.lastName"
+              v-bind:shifts="tutor.shifts"
             />
             <EditTutor 
               v-else-if="item === 'edit tutor'" 
@@ -59,6 +60,8 @@
 import SingleSchedule from './SingleSchedule.vue'
 import AddShift from './AddShift.vue'
 import EditTutor from './EditTutor.vue'
+import EventBus from "../event-bus";
+
 export default {
   props: ['tutorID'],
   data: () => ({
@@ -103,6 +106,20 @@ export default {
         });
       }
     }
+  },
+  mounted() {
+    EventBus.$on("DELETED_SHIFT", () => {
+      this.$http.get(`${this.apiURL}/tutors/${this.tutorID}`)
+      .then(data => {
+        this.tutor = data.body;
+      })
+    });
+    EventBus.$on("ADDED_SHIFT", () => {
+      this.$http.get(`${this.apiURL}/tutors/${this.tutorID}`)
+      .then(data => {
+        this.tutor = data.body;
+      })
+    });
   }
   
 }
@@ -111,6 +128,6 @@ export default {
 <style>
 #tab-window {
   width: 70vw !important;
-  height:83.2vh !important;
+  height:100% !important;
 }
 </style>

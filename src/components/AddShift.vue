@@ -4,6 +4,7 @@
   class="individual"
   id="add-shift">
     <v-container>
+      <v-layout row>
       <v-flex mt-3>
         <h1>Add a shift for {{ tutorName }}</h1>
         <form>
@@ -28,7 +29,7 @@
                   class="shift-input"
                   required
                   v-model="startTime"
-                  :items="times"
+                  :items="[...times, '7:00PM']"
                   :label="'Start time'"
                 ></v-autocomplete>
                 <v-autocomplete
@@ -36,7 +37,7 @@
                   class="shift-input"
                   required
                   v-model="endTime"
-                  :items="times"
+                  :items="[...times, '7:00PM']"
                   :label="'End Time'"
                 ></v-autocomplete>
                 <v-autocomplete
@@ -58,7 +59,112 @@
         </form>
         <h1 v-bind:class="'successful' + (!shiftAdded ? ' invisible' : '')">New shift was added.</h1>
       </v-flex>
+      <v-flex mt-3 mr-5>
+        <h1 mb-5 >Current Shifts</h1>
+        <v-card class="shift-list">
+          <v-list mt-5 two-line>
+            <template 
+              v-for="(shift, index) in shifts"
+            > 
+              <v-divider
+                v-if="index > 0"
+                :key="'divider' + index"
+              ></v-divider>
+            <v-list-tile
+              :key="'shift' + shift.id" 
+              class="shift-list-item"           
+            >
+              <v-list-tile-content>
+                <v-list-tile-title v-html="shift.day"></v-list-tile-title>
+                <v-list-tile-title v-html="shift.startTime + ' - ' + shift.endTime"></v-list-tile-title>
+                <v-list-tile-sub-title v-html="shift.center"></v-list-tile-sub-title>
+              </v-list-tile-content>
+              
+              <!-- <v-list-tile-action>
+                <v-icon 
+                  :color="shift.active ? 'teal' : 'grey'"
+                  @click="openDialog1(shift.id)"
+                >edit</v-icon>
+                
+              </v-list-tile-action> -->
+              <v-list-tile-action>
+                <v-icon 
+                  :color="shift.active ? 'teal' : 'grey'"
+                  @click="openDialog2(shift.id)"
+                >delete</v-icon>
+              </v-list-tile-action>
+            </v-list-tile>
+            </template>
+          </v-list>
+        </v-card>
+      </v-flex>
+      </v-layout>
     </v-container>
+    <v-dialog
+      v-model="dialog1"
+      max-width="700"
+    >
+      <v-card>
+        <v-card-title class="headline">Permanantly delete this shift?</v-card-title>
+
+
+        <v-card-text>
+          Deleting can not be undone
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            color="grey darken-2"
+            flat="flat"
+            @click="dialog1 = false"
+          >
+            Cancel
+          </v-btn>
+
+          <v-btn
+            color="error"
+            flat="flat"
+            @click="edit(selectedShift)"
+          >
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog
+      v-model="dialog2"
+      max-width="700"
+    >
+      <v-card>
+        <v-card-title class="headline">Permanantly delete this shift?</v-card-title>
+
+        <v-card-text>
+          Deleting can not be undone
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            color="grey darken-2"
+            flat="flat"
+            @click="dialog2 = false"
+          >
+            Cancel
+          </v-btn>
+
+          <v-btn
+            color="error"
+            flat="flat"
+            @click="del(selectedShift)"
+          >
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-layout>
 </template>
 
@@ -66,8 +172,11 @@
 import { times, timesFormatted } from '../utilities';
 import EventBus from '../event-bus';
 export default {
-  props: ['tutorID', 'tutorName', 'shiftAdded'],
+  props: ['tutorID', 'tutorName', 'shiftAdded', 'shifts'],
   data: () => ({
+    selectedShift: 0,
+    dialog1: false,
+    dialog2: false,
     apiURL: "http://localhost:8000",
     days: [
       'Monday',
@@ -111,8 +220,9 @@ export default {
       this.center = ''
     },
     submit() {
-      const startTimeFormatted = timesFormatted[times.indexOf(this.startTime)];
-      const endTimeFormatted = timesFormatted[times.indexOf(this.endTime)];
+      const times1 = [...times, "7:00PM"];
+      const startTimeFormatted = timesFormatted[times1.indexOf(this.startTime)];
+      const endTimeFormatted = timesFormatted[times1.indexOf(this.endTime)];
       if (this.day && this.startTime && this.endTime && this.center) {
         this.$http.post(`${this.apiURL}/shifts`, {
           tutorId: this.tutorID,
@@ -123,13 +233,32 @@ export default {
         })
         .then(() => {
           this.shiftAdded = true;
-          this.emitMethod();
+          this.emitMethod('ADDED_SHIFT');
           this.clear();
         })
       }
     },
-    emitMethod() {
-      EventBus.$emit('ADDED_SHIFT', true);
+    emitMethod(action) {
+      EventBus.$emit(action, true);
+    },
+    openDialog1(id) {
+      this.selectedShift = id;
+      this.dialog1 = true;
+    },
+    openDialog2(id) {
+      this.selectedShift = id;
+      this.dialog2 = true;
+    },
+    del(shiftID) {
+      this.$http.delete(`${this.apiURL}/shifts/${shiftID}`)
+      .then(() => {
+        this.emitMethod('DELETED_SHIFT');
+      });
+      this.dialog2 = false;
+    },
+    edit(shiftID) {
+      // eslint-disable-next-line
+      console.log(shiftID)
     }
   }
 
@@ -145,6 +274,12 @@ export default {
 }
 .invisible {
     visibility: hidden;
-  }
+}
+.shift-list {
+  width: 30rem;
+}
+.shift-list-item {
+  height: 6rem;
+}
 </style>
 
